@@ -1,0 +1,127 @@
+<!--     Copyright 2019 Jon Azpiazu
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title>Dashboard</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css" />
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+    <link href="https://nightly.datatables.net/fixedheader/css/fixedHeader.dataTables.css" rel="stylesheet"
+        type="text/css" />
+    <script src="https://nightly.datatables.net/fixedheader/js/dataTables.fixedHeader.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css"/>
+
+    <script>
+      $(document).ready(function () {
+        $('#example').DataTable({
+          "order": [[0, "asc"]],
+          "paging": false,
+          fixedHeader: {
+            header: true,
+            footer: false
+          }
+        });
+      });
+    </script>
+
+</head>
+<body>
+
+<div class="container">
+
+      <h1>Projects' Dashboard</h1>
+
+      <table id="example" class="display" style="width:100%">
+          <thead class="black white-text">
+              <tr>
+                  <th scope="col">Project</th>
+                  <th scope="col"># open issues</th>
+                  <th scope="col">Last activity</th>
+                  <th scope="col">Last pipeline</th>
+                  <th scope="col">Default branch pipeline</th>
+                  <th scope="col">Default branch</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Readme</th>
+                </tr>
+          </thead>
+
+          <tbody>
+            {% for project in projects %}
+            <tr>
+              <td><a href="{{ project['web_url'] }}">{{ project['name'] }}</a>
+              </td>
+              <td>{{ project['open_issues_count'] }}</td>
+              <td>{{ project['last_activity_at'] }}</td>
+
+              <td>{% if project['pipeline_status'] == "failed" %}
+                <button type="button" class="btn btn-danger">
+                  <a style="color:black" href="{{ project['pipeline_web_url'] }}">
+                    {{ project['pipeline_status'] }}</a> </button>
+                {% elif project['pipeline_status'] == "success" %}
+                <button type="button" class="btn btn-success">
+                  <a style="color:black" href="{{ project['pipeline_web_url'] }}">
+                    {{ project['pipeline_status'] }}</a> </button>
+                {% else %}
+                <button type="button" class="btn btn-warning">
+                    {{ project['pipeline_status'] }} </button>
+                {% endif %}
+              </td>
+
+              <td>{% if project['master_pipeline_status'] == "failed" %}
+                <button type="button" class="btn btn-danger">
+                  <a style="color:black" href="{{ project['master_pipeline_web_url'] }}">
+                    {{ project['master_pipeline_status'] }}</a> </button>
+                {% elif project['master_pipeline_status'] == "success" %}
+                <button type="button" class="btn btn-success">
+                  <a style="color:black" href="{{ project['master_pipeline_web_url'] }}">
+                    {{ project['master_pipeline_status'] }}</a> </button>
+                {% else %}
+                <button type="button" class="btn btn-warning">
+                    {{ project['master_pipeline_status'] }} </button>
+                {% endif %}
+              </td>
+
+              <td>{{ project['default_branch'] }}</td>
+              <td>{{ project['description'] }}</td>
+              <td>{% if project['readme_url'] is none %}
+                <button type="button" class="btn btn-warning">
+                  None </button>
+                {% else %}
+                <a href="{{ project['readme_url'] }}">README</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+      </table>
+
+    </div>
+
+    <footer>
+    <div>
+      Generated at {{ generated_time }}
+    </div>
+  </footer>
+</body>
+</html>
