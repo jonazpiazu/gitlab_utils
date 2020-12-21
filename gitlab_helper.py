@@ -45,7 +45,7 @@ class GitlabHelper:
     def get_group_id(self, group_name):
         return next(
             x
-            for x in self.gl.groups.list(search=group_name)
+            for x in self.gl.groups.list(search=group_name,all=True)
             if x.full_name == group_name
         )
 
